@@ -9,13 +9,13 @@ class Formant:
 
         freq_range = max_freq - min_freq
 
-        xs = np.linspace(0, 1, freq_range)
+        x = np.linspace(0, 1, freq_range)
 
-        ys = curve.evaluate(freq_range)
+        y = curve.evaluate(freq_range)
 
-        freq_xs = (xs * freq_range + min_freq) / max_freq
+        freq_x = (x * freq_range + min_freq) / max_freq
 
-        interpolate = scipy.interpolate.interp1d(freq_xs, ys, fill_value='extrapolate')
+        interpolate = scipy.interpolate.interp1d(freq_x, y, fill_value='extrapolate')
 
         self.formant = interpolate(np.linspace(0, 1, int(round(sample_rate / 2))))
 
@@ -38,13 +38,13 @@ class Formant:
         half_fft = np.zeros(wavelength, dtype=complex)
 
         for i in range(max_freq):
-            p = int(round(pitch * i))
+            h = int(round(pitch * i))
 
             angle = random.random() * (2 * np.pi) * random_phase
 
             complex_angle = (np.cos(angle) + 1j * np.sin(angle))
 
-            half_fft[(i + 1) * 2 * scale] = self.formant[p] * complex_angle
+            half_fft[(i + 1) * 2 * scale] = self.formant[h] * complex_angle
 
         fft = np.concatenate((half_fft, np.flipud(np.conj(half_fft[1:]))))
 
@@ -56,16 +56,16 @@ class LogFormant(Formant):
 
         freq_range = max_freq - min_freq
 
-        xs = np.linspace(0, 1, freq_range)
+        x = np.linspace(0, 1, freq_range)
 
-        ys = curve.evaluate(freq_range)
+        y = curve.evaluate(freq_range)
 
         log_min_freq = np.log2(min_freq)
 
         log_freq_range = np.log2(max_freq) - np.log2(min_freq)
 
-        log_xs = np.power(2, xs * log_freq_range + log_min_freq) / max_freq
+        log_x = np.power(2, x * log_freq_range + log_min_freq) / max_freq
 
-        interpolate = scipy.interpolate.interp1d(log_xs, ys, fill_value='extrapolate')
+        interpolate = scipy.interpolate.interp1d(log_x, y, fill_value='extrapolate')
 
         self.formant = interpolate(np.linspace(0, 1, int(round(sample_rate / 2))))

@@ -15,7 +15,7 @@ class SpectrumAnalyzer:
     def __init__(self, width=1024, height=512, min_freq=20, max_freq=20000):
         pygame.display.init()
 
-        pygame.display.set_caption('Spectrum analyzer')
+        pygame.display.set_caption('Spectrum')
 
         self.samples = np.zeros(max_freq)
 
@@ -64,7 +64,7 @@ class SpectrumAnalyzer:
                 pygame.draw.rect(
                     self.surface,
                     (255, 255, 255),
-                    [x, height - (y * height * 8), 1, height]
+                    [x, height - (y * height * 4), 1, height]
                 )
 
             pygame.display.flip()

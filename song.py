@@ -74,7 +74,7 @@ class EventsLoopThread(Thread):
                                 if callable(sound):
                                     sound = sound()
 
-                                events.append({ 'time': t2, 'sound': sound })
+                                events.append({'time': t2, 'sound': sound})
 
                         t1 += bar.beats * seconds(60 / bpm)
 
