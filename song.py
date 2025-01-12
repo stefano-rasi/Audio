@@ -42,7 +42,7 @@ events = []
 def seconds(s):
     return s * sample_rate
 
-class EventsLoopThread(Thread):
+class EventLoopThread(Thread):
     def __init__(self, track):
         super().__init__()
 
@@ -93,7 +93,7 @@ class EventsLoopThread(Thread):
 threads = []
 
 for track in song.tracks:
-    thread = EventsLoopThread(track)
+    thread = EventLoopThread(track)
 
     threads.append(thread)
 
@@ -154,7 +154,7 @@ while True:
         threads.clear()
 
         for track in song.tracks:
-            thread = EventsLoopThread(track)
+            thread = EventLoopThread(track)
 
             threads.append(thread)
 
