@@ -1,6 +1,7 @@
+import argparse
+
 import numpy as np
 import librosa
-import argparse
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(prog='spectrogram')

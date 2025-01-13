@@ -3,13 +3,13 @@ import sys
 import argparse
 import importlib.util
 
+from threading import Thread
+
 import scipy
 import numpy as np
 import pynput
 import pyaudio
 import pygame.midi
-
-from threading import Thread
 
 class SpectrumAnalyzer:
     def __init__(self, width=1024, height=512, min_freq=20, max_freq=20000):

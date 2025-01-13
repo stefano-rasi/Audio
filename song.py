@@ -4,12 +4,12 @@ import time
 import argparse
 import importlib.util
 
+from threading import Thread
+
 import scipy
 import numpy as np
 import pygame
 import pyaudio
-
-from threading import Thread
 
 t = 0
 
