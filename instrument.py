@@ -17,14 +17,14 @@ class SpectrumAnalyzer:
 
         pygame.display.set_caption('Spectrum')
 
-        self.samples = np.zeros(max_freq)
-
-        self.surface = pygame.display.set_mode((width, height), pygame.RESIZABLE)
-
         self.spectrum = None
 
         self.min_freq = min_freq
         self.max_freq = max_freq
+
+        self.samples = np.zeros(max_freq)
+
+        self.surface = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 
     def add_samples(self, samples):
         self.samples = np.roll(self.samples, -len(samples))
@@ -152,7 +152,9 @@ while running:
         events = midi_input.read(16)
 
         for event in events:
-            thread = Thread(target=lambda: instrument.on_midi_event(event[0]))
+            target = lambda: instrument.on_midi_event(event[0])
+
+            thread = Thread(target=target)
 
             thread.start()
 
