@@ -1,5 +1,5 @@
-import scipy
 import numpy as np
+import scipy
 
 class LinearCurve:
     def __init__(self, points):

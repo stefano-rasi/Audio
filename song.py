@@ -6,8 +6,8 @@ import importlib.util
 
 from threading import Thread
 
-import scipy
 import numpy as np
+import scipy
 import pygame
 import pyaudio
 
@@ -117,7 +117,7 @@ class SpectrumAnalyzer:
                 pygame.draw.rect(
                     self.surface,
                     (255, 255, 255),
-                    [x, height - (y * height * 4), 1, height]
+                    [x, height - (y * height * 8), 1, height]
                 )
 
             pygame.display.flip()

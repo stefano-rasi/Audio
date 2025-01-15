@@ -1,7 +1,7 @@
 import random
 
-import scipy
 import numpy as np
+import scipy
 
 from collections.abc import Mapping, Iterable
 
@@ -15,7 +15,7 @@ class Harmonics:
             for i, power in enumerate(harmonics):
                 self.harmonics[i + 1] = power
 
-    def make_waveform(self, pitch, sample_rate, random_phase=1, scale=4):
+    def make_waveform(self, pitch, sample_rate, random_phase=0, scale=4):
         wavelength = int(sample_rate / pitch * scale)
 
         half_fft = np.zeros(wavelength, dtype=complex)

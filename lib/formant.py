@@ -1,7 +1,7 @@
 import random
 
-import scipy
 import numpy as np
+import scipy
 
 class Formant:
     def __init__(self, curve, sample_rate, min_freq=20, max_freq=20000):
@@ -17,7 +17,7 @@ class Formant:
 
         interpolate = scipy.interpolate.interp1d(freq_x, y, fill_value='extrapolate')
 
-        self.formant = interpolate(np.linspace(0, 1, int(round(sample_rate / 2))))
+        self.formant = interpolate(np.linspace(0, 1, sample_rate // 2))
 
     def make_noise(self):
         angles = np.random.rand(len(self.formant)) * (2 * np.pi)
@@ -30,8 +30,8 @@ class Formant:
 
         return scipy.fftpack.ifft(fft).real * len(self.formant)
 
-    def make_waveform(self, pitch, random_phase=1, scale=4):
-        max_freq = int(round(self.sample_rate / pitch / 2)) - 1
+    def make_waveform(self, pitch, random_phase=0, scale=4):
+        max_freq = int((self.sample_rate / pitch) // 2) - 1
 
         wavelength = int(round(self.sample_rate / pitch * scale))
 
@@ -68,4 +68,4 @@ class LogFormant(Formant):
 
         interpolate = scipy.interpolate.interp1d(log_x, y, fill_value='extrapolate')
 
-        self.formant = interpolate(np.linspace(0, 1, int(round(sample_rate / 2))))
+        self.formant = interpolate(np.linspace(0, 1, sample_rate // 2))
