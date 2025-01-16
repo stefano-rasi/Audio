@@ -5,9 +5,7 @@ class Convolution:
     def __init__(self, impulse):
         self.window = np.zeros(len(impulse))
 
-        self.impulse_fft = scipy.fft.rfft(impulse)
-
-        self.max_impulse_fft = np.amax(self.impulse_fft)
+        self.impulse_fft = scipy.fft.rfft(impulse) / (len(impulse) / 2)
 
     def process(self, samples):
         self.window = np.roll(self.window, -len(samples))
@@ -16,7 +14,7 @@ class Convolution:
 
         window_fft = scipy.fft.rfft(self.window)
 
-        convolution_fft = window_fft * self.impulse_fft / self.max_impulse_fft
+        convolution_fft = window_fft * self.impulse_fft
 
         convolution = scipy.fft.irfft(convolution_fft)
 
