@@ -210,19 +210,19 @@ while running:
 
         song = module.Song(sample_rate)
 
-        for track_thread in track_threads:
-            track_thread.stop()
+        for thread in track_threads:
+            thread.stop()
 
         events.clear()
 
         track_threads.clear()
 
         for track in song.tracks:
-            track_thread = TrackThread(track)
+            thread = TrackThread(track)
 
-            track_threads.append(track_thread)
+            track_threads.append(thread)
 
-            track_thread.start()
+            thread.start()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -230,8 +230,8 @@ while running:
 
     spectrum_analyzer.refresh()
 
-for track_thread in track_threads:
-    track_thread.stop()
+for thread in track_threads:
+    thread.stop()
 
 stream.close()
 
