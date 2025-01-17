@@ -7,7 +7,7 @@ class Convolution:
 
         self.impulse_fft = scipy.fft.rfft(impulse) / (len(impulse) / 2)
 
-    def process(self, samples):
+    def apply(self, samples):
         self.window = np.roll(self.window, -len(samples))
 
         self.window[-len(samples):] = samples
