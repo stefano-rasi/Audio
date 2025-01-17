@@ -28,27 +28,47 @@ class Formant:
 
         fft = np.concatenate((half_fft, np.flipud(np.conj(half_fft[1:]))))
 
-        return scipy.fftpack.ifft(fft).real * len(self.formant)
+        noise = scipy.fftpack.ifft(fft).real * len(self.formant)
 
-    def make_waveform(self, pitch, random_phase=0, scale=4):
+        return noise
+
+    def make_waveform(self, pitch, random_phase=0, scale=4, mode='fft'):
         max_freq = int((self.sample_rate / pitch) // 2) - 1
 
         wavelength = int(round(self.sample_rate / pitch * scale))
 
-        half_fft = np.zeros(wavelength, dtype=complex)
+        if mode == 'fft':
+            half_fft = np.zeros(wavelength, dtype=complex)
 
-        for i in range(max_freq):
-            h = int(round(pitch * i))
+            for i in range(max_freq):
+                p = int(round(pitch * i))
 
-            angle = random.random() * (2 * np.pi) * random_phase
+                angle = random.random() * (2 * np.pi) * random_phase
 
-            complex_angle = (np.cos(angle) + 1j * np.sin(angle))
+                complex_angle = (np.cos(angle) + 1j * np.sin(angle))
 
-            half_fft[(i + 1) * 2 * scale] = self.formant[h] * complex_angle
+                half_fft[(i + 1) * 2 * scale] = self.formant[p] * complex_angle
 
-        fft = np.concatenate((half_fft, np.flipud(np.conj(half_fft[1:]))))
+            fft = np.concatenate((half_fft, np.flipud(np.conj(half_fft[1:]))))
 
-        return scipy.fftpack.ifft(fft).real * wavelength
+            waveform = scipy.fftpack.ifft(fft).real * wavelength
+
+            return waveform
+        elif mode == 'sin':
+            sins = np.empty([max_freq, wavelength])
+
+            for i in range(max_freq):
+                p = int(round(pitch * i))
+
+                phase = (i + 1) * 2 * np.pi * scale * (random.random() * random_phase)
+
+                amplitude = self.formant[p]
+
+                sins[i] = np.sin(np.linspace(0, (i + 1) * 2 * np.pi * scale, wavelength) + phase) * amplitude
+
+            waveform = np.sum(sins, axis=0)
+
+            return waveform
 
 class LogFormant(Formant):
     def __init__(self, curve, sample_rate, min_freq=20, max_freq=20000):
