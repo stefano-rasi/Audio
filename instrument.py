@@ -5,8 +5,8 @@ import importlib.util
 
 from threading import Thread
 
-import scipy
 import numpy as np
+import scipy
 import pynput
 import pyaudio
 import pygame.midi
@@ -31,9 +31,7 @@ class SpectrumAnalyzer:
 
         self.samples[-len(samples):] = samples
 
-        thread = Thread(target=self.make_spectrum)
-
-        thread.start()
+        self.make_spectrum()
 
     def make_spectrum(self):
         ifft = scipy.fftpack.rfft(self.samples)
@@ -64,7 +62,7 @@ class SpectrumAnalyzer:
                 pygame.draw.rect(
                     self.surface,
                     (255, 255, 255),
-                    [x, height - (y * height * 4), 1, height]
+                    [x, height - (y * height * 8), 1, height]
                 )
 
             pygame.display.flip()
@@ -77,11 +75,14 @@ parser.add_argument('path', nargs='?')
 
 parser.add_argument('--midi', default=True, action=argparse.BooleanOptionalAction)
 parser.add_argument('--keyboard', default=False, action=argparse.BooleanOptionalAction)
-parser.add_argument('--sample_rate', type=int, default=44100)
+parser.add_argument('--buffer-size', type=int, default=1024)
+parser.add_argument('--sample-rate', type=int, default=44100)
+parser.add_argument('--spectrum-analyzer', default=True, action=argparse.BooleanOptionalAction)
 
 args = parser.parse_args()
 
 path = args.path
+
 sample_rate = args.sample_rate
 
 basename = os.path.basename(path)
@@ -96,12 +97,14 @@ spec.loader.exec_module(module)
 
 instrument = module.Instrument(sample_rate)
 
-spectrum_analyzer = SpectrumAnalyzer()
+if args.spectrum_analyzer:
+    spectrum_analyzer = SpectrumAnalyzer()
 
 def callback(in_data, frame_count, time_info, status):
     samples = instrument.get_samples(frame_count)
 
-    spectrum_analyzer.add_samples(samples)
+    if args.spectrum_analyzer:
+        spectrum_analyzer.add_samples(samples)
 
     return (samples.clip(-1, 1).astype(np.float32).tobytes(), pyaudio.paContinue)
 
@@ -112,7 +115,8 @@ stream = p.open(
     output=True,
     format=pyaudio.paFloat32,
     channels=1,
-    stream_callback=callback
+    stream_callback=callback,
+    frames_per_buffer=args.buffer_size
 )
 
 if args.midi:
@@ -152,17 +156,14 @@ while running:
         events = midi_input.read(16)
 
         for event in events:
-            target = lambda: instrument.on_midi_event(event[0])
+            instrument.on_midi_event(event[0])
 
-            thread = Thread(target=target)
+    if args.spectrum_analyzer:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-            thread.start()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    spectrum_analyzer.refresh()
+        spectrum_analyzer.refresh()
 
 stream.close()
 
