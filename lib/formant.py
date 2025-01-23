@@ -32,8 +32,25 @@ class Formant:
 
         return noise
 
+    def make_sound(self, pitch, scale=4, mode='sin'):
+        duration = len(pitch)
+
+        max_freq = int((self.sample_rate / np.max(pitch)) // 2)
+
+        if mode == 'sin':
+            sins = np.empty([max_freq, duration])
+
+            for i in range(max_freq):
+                amplitude = self.formant.take(np.array(pitch * (i + 1), dtype=int))
+
+                sins[i] = np.sin(np.linspace(0, 1, duration) * (pitch / np.max(pitch) * (i + 1)) * 2*np.pi * scale * (duration / (self.sample_rate / pitch * 4))) * amplitude
+
+            samples = np.sum(sins, axis=0)
+
+            return samples 
+
     def make_waveform(self, pitch, random_phase=0, scale=4, mode='fft'):
-        max_freq = int((self.sample_rate / pitch) // 2) - 1
+        max_freq = int((self.sample_rate / pitch) // 2)
 
         wavelength = int(round(self.sample_rate / pitch * scale))
 
@@ -41,7 +58,7 @@ class Formant:
             half_fft = np.zeros(wavelength, dtype=complex)
 
             for i in range(max_freq):
-                p = int(round(pitch * i))
+                p = int(round(pitch * (i + 1)))
 
                 angle = random.random() * (2 * np.pi) * random_phase
 
@@ -52,23 +69,21 @@ class Formant:
             fft = np.concatenate((half_fft, np.flipud(np.conj(half_fft[1:]))))
 
             waveform = scipy.fftpack.ifft(fft).real * wavelength
-
-            return waveform
         elif mode == 'sin':
             sins = np.empty([max_freq, wavelength])
 
             for i in range(max_freq):
-                p = int(round(pitch * i))
+                p = int(round(pitch * (i + 1)))
 
                 phase = (i + 1) * 2 * np.pi * scale * (random.random() * random_phase)
 
                 amplitude = self.formant[p]
 
-                sins[i] = np.sin(np.linspace(0, (i + 1) * 2 * np.pi * scale, wavelength) + phase) * amplitude
+                sins[i] = np.sin(np.linspace(0, (i + 1) * 2*np.pi * scale, wavelength) + phase) * amplitude
 
             waveform = np.sum(sins, axis=0)
 
-            return waveform
+        return waveform
 
 class LogFormant(Formant):
     def __init__(self, curve, sample_rate, min_freq=20, max_freq=20000):
