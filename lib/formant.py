@@ -43,7 +43,7 @@ class Formant:
             for i in range(max_freq):
                 amplitude = self.formant.take(np.array(pitch * (i + 1), dtype=int))
 
-                sins[i] = np.sin(np.linspace(0, 1, duration) * (pitch / np.max(pitch) * (i + 1)) * 2*np.pi * scale * (duration / (self.sample_rate / pitch * 4))) * amplitude
+                sins[i] = np.sin(np.linspace(0, 1, duration) * (pitch / np.max(pitch) * (i + 1)) * 2*np.pi * scale * (duration / (self.sample_rate / pitch * scale))) * amplitude
 
             samples = np.sum(sins, axis=0)
 
