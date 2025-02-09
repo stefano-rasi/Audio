@@ -3,8 +3,6 @@ import sys
 import argparse
 import importlib.util
 
-from threading import Thread
-
 import numpy as np
 import scipy
 import pynput

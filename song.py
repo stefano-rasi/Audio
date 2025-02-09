@@ -4,19 +4,12 @@ import time
 import argparse
 import importlib.util
 
-from threading import Thread
-
 import numpy as np
 import scipy
 import pygame
 import pyaudio
 
-t = 0
-
-events = []
-
-def seconds(s):
-    return s * sample_rate
+from threading import Thread
 
 class TrackThread(Thread):
     def __init__(self, track):
@@ -136,6 +129,9 @@ bpm = args.bpm
 path = args.path
 sample_rate = args.sample_rate
 
+def seconds(s):
+    return s * sample_rate
+
 basename = os.path.basename(path)
 
 spec = importlib.util.spec_from_file_location(basename, path)
@@ -147,6 +143,10 @@ sys.modules[basename] = module
 spec.loader.exec_module(module)
 
 song = module.Song(sample_rate)
+
+t = 0
+
+events = []
 
 track_threads = []
 
