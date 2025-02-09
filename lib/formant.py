@@ -32,7 +32,7 @@ class Formant:
 
         return noise
 
-    def make_sound(self, pitch, scale=4, mode='sin'):
+    def make_sound(self, pitch, random_phase=0, scale=4, mode='sin'):
         duration = len(pitch)
 
         max_freq = int((self.sample_rate / np.max(pitch)) // 2)
@@ -41,9 +41,11 @@ class Formant:
             sins = np.empty([max_freq, duration])
 
             for i in range(max_freq):
+                phase = 2*np.pi * scale * (random.random() * random_phase)
+
                 amplitude = self.formant.take(np.array(pitch * (i + 1), dtype=int))
 
-                sins[i] = np.sin(np.linspace(0, 1, duration) * (pitch / np.max(pitch) * (i + 1)) * 2*np.pi * scale * (duration / (self.sample_rate / pitch * scale))) * amplitude
+                sins[i] = np.sin(np.linspace(0, 1, duration) * (pitch / np.max(pitch) * (i + 1)) * 2*np.pi * scale * (duration / (self.sample_rate / pitch * scale)) + phase) * amplitude
 
             samples = np.sum(sins, axis=0)
 
@@ -75,7 +77,7 @@ class Formant:
             for i in range(max_freq):
                 p = int(round(pitch * (i + 1)))
 
-                phase = (i + 1) * 2 * np.pi * scale * (random.random() * random_phase)
+                phase = (i + 1) * 2*np.pi * scale * (random.random() * random_phase)
 
                 amplitude = self.formant[p]
 
